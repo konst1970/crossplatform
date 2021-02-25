@@ -1,0 +1,12 @@
+#
+# Cross Platform Virtual Machine
+#
+# R0 - R255 - 2 bytes, bigendian
+#
+# Bytecode: 0x00 - idle                             (1 byte)
+#           0x01 - Load two bytes to Register B3    (4 bytes), bigendian
+#           0x02 - Add B1 and B2 and place to B3    (4 bytes)
+#           0x03 - Print B1                         (2 bytes)
+#                  for instance 0x05 0x00 prints R1
+#           0x04 - if B1 nonzero then jump to next B2 commands (3 bytes)
+#           0x05 - Substrate B1 and B2 and place to B3 (4 bytes), bigendian
