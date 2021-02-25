@@ -10,3 +10,4 @@
 #                  for instance 0x05 0x00 prints R1
 #           0x04 - if B1 nonzero then jump to next B2 commands (3 bytes)
 #           0x05 - Substrate B1 and B2 and place to B3 (4 bytes), bigendian
+#           0x06 - if B1 > B2 jump to B3
