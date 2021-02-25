@@ -21,7 +21,7 @@ logging.basicConfig(
 
 bytecode = [0x00,  # idle
             0x01,  # load 0xFF01 (65281) to R0 , bigendian
-              0x00, 
+              0xFF, 
               0x00,
               0x00,  # R0
             0x01,  # load 0x0003 to R1, bigendian
@@ -32,9 +32,14 @@ bytecode = [0x00,  # idle
               0x00,  # R0
               0x01,  # R1
               0x02,  # R2  /// R2 = R1 - R0
-            0x04, # Jump if nonzero
+            0x01, # load
+              0x00, # 0x0001
+              0x01,
+              0x03, # R3
+            0x06, # Jump if nonzero
               0x00, # if R0 nonzero then jump to next R1 commands 
               0x01, # R1 where to jump
+              0x03,
             0x00, # idle
             0x00, # idle
             0x00, # idle
@@ -98,5 +103,12 @@ while (count < len(bytecode)):
       count += 3
       continue
 
-logging.debug("bytecode is completed")
+    if (bytecode[count] == 0x06): # If Ra > Rb jump to R3
+      logging.debug("Jump if Ra > Rb "+str(R[bytecode[count+1]])+" "+str(R[bytecode[count+2]]))
+      if (R[bytecode[count+1]] > R[bytecode[count+2]]):
+        logging.debug("Jump to next Rc "+str(R[bytecode[count+3]]))
+        count += R[bytecode[count+3]]  # this code is not safe
+      count += 4
+      continue
 
+logging.debug("bytecode is completed")
