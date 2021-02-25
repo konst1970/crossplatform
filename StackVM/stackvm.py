@@ -6,11 +6,13 @@ logging.basicConfig(
     level=logging.DEBUG # allow DEBUG level messages to pass through the logger
     )
 
+# idle, push 1, push 2, add, idle
+
 bytecode = [0x00,  # idle
             0xFF,  # push
-            0x01,  # 1
+            0x01,  # 1 , (1 byte)
             0xFF,  # push
-            0x02,  # 2
+            0x02,  # 2 , (1 byte)
             0x01,  # add 
             0x00]  # idle
 
@@ -24,7 +26,7 @@ def push(elem):
 
 def pop():
   global stack
-  stack.pop(0)
+  return stack.pop(0) 
 
 while (count < len(bytecode)):
   if (bytecode[count] == 0x00): # idle
@@ -42,13 +44,10 @@ while (count < len(bytecode)):
 
   if (bytecode[count] == 0x01): # add
       logging.debug("ADD")
-      result = stack[0] + stack[1]
-      pop()
-      pop()
+      result = pop() + pop()
       count += 1
       push(result)
       logging.debug(stack)
       continue
 
   count +=1
-
