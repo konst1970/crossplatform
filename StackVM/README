@@ -1,1 +1,17 @@
 This is a simple example of Stack Virtual Machine
+
+Command
+0x00  idle. 
+      Drycycle for virtual machine.
+
+0xFF  push. 
+      Push value arg0 to the stack. Value is one byte argument.
+      Example: 0xFF 0x01
+               push 0x01 to the stack.
+      
+0x01  Add. 
+      Pops stack0 and pops stack1 values from the stack and push sum = stack0 + stack1
+
+0x1F  if.
+      If nonzero. Pops stack0 and stack1 from the stack. If stack0 != 0 then jump count+=stack1
+      
