@@ -68,4 +68,4 @@ while (count < len(bytecode)):
       logging.debug(stack)
       continue
 
-  count +=1
+logging.debug("bytecode is completed")
