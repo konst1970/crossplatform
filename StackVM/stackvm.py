@@ -22,12 +22,6 @@ bytecode = [0x00,  # idle
             0x00   #idle
             ]
 
-
-#  0x1F (if nonzero)
-#  0x00 (arg1) - if arg1 != 0
-#  0x01 (arg2) - then jump to count+=arg2
-
-
 count = 0
 
 stack = []
