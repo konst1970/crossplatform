@@ -48,18 +48,19 @@ bytecode = [0x00,  # idle
             0x00, # idle
             0x00, # idle
             0xA0, # function
-              0x00, # function id
-              0x04, # lenght of function in bytes
+              0x00, # function ID
+              0x05, # lenght of function in bytes
                 0x03, # print
-                0x09, # R0
+                0x02, # R2
                 0x00, # idle
                 0xA1, # return (end of function)
+                0x00, # The ID of the function we are returning from  
             0x01, # load
               0x00, # 0x0000
               0x00, # 
               0x00, # R0
-            0xAA, # call
-              0x00, # R1 (function id)
+            0xAA, # call function
+              0x00, # R0 (function id)
             0x00, # idle
             0x00, # idle
             0x00, # idle
@@ -73,10 +74,15 @@ logging.debug(bytecode)
 # command count
 count = 0
 
+#number of registers
+nreg = 256
+
+
+# 256 functions F[0] ... F[255]
 function = {'id':0, 'length':0, 'addr':0, 'return_addr':0}
+F = [0] * nreg
 
 # 256 Registers  R[0] ... R[255]
-nreg = 256
 R = [0] * nreg
 
 # Go through all bytes bytes
@@ -136,27 +142,28 @@ while (count < len(bytecode)):
     
     if (bytecode[count] == 0xA0): # function
       logging.debug("FUNCTION " + str(bytecode[count+1]) + " length " + str(bytecode[count+2]))
-      function['id'] = bytecode[count+1]
-      function['length'] = bytecode[count+2]
-      function['addr'] = count
+      my_function = function
+      my_function['id'] = bytecode[count+1]
+      my_function['length'] = bytecode[count+2]
+      my_function['addr'] = count
+      F[my_function['id']] = my_function
       count = count + bytecode[count+2] + 3
       continue
 
     if (bytecode[count] == 0xA1): # return
-      count = function['return_addr']
-      logging.debug("RETURN " + str(function['return_addr']))
-      logging.debug("BYTECODE " + str(bytecode[function['return_addr']]))
+      logging.debug("RETURN FROM FUNCTION ID " + str(bytecode[count+1]))
+      my_function = F[bytecode[count+1]]
+      count = my_function['return_addr']
+      logging.debug("RETURN " + str(my_function['return_addr']))
+      logging.debug("BYTECODE " + str(bytecode[my_function['return_addr']]))
       continue
 
     if (bytecode[count] == 0xAA): # call function
-      function['return_addr'] = count+2
       logging.debug("CALL " + str(bytecode[1]))
-      logging.debug("function " + str(function['id']))
-      logging.debug("function length " + str(function['length']))
-      logging.debug("function addr " + str(function['addr']))
-      logging.debug("return addr " + str(function['return_addr']))
-      
-      count = function['addr']+function['length'] -1
+      my_function = F[bytecode[count+1]]
+      my_function['return_addr'] = count+2
+      logging.debug("F " + str(my_function))
+      count = my_function['addr']+my_function['length'] - 2
 
       logging.debug("count " + str(count) + " bytecode " + str(bytecode[count]))
       continue
