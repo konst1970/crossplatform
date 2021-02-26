@@ -73,10 +73,7 @@ logging.debug(bytecode)
 # command count
 count = 0
 
-function_id = 0
-function_length = 0
-function_addr = 0
-return_addr = 0
+function = {'id':0, 'length':0, 'addr':0, 'return_addr':0}
 
 # 256 Registers  R[0] ... R[255]
 nreg = 256
@@ -139,27 +136,27 @@ while (count < len(bytecode)):
     
     if (bytecode[count] == 0xA0): # function
       logging.debug("FUNCTION " + str(bytecode[count+1]) + " length " + str(bytecode[count+2]))
-      function_id = bytecode[count+1]
-      function_length = bytecode[count+2]
-      function_addr = count
+      function['id'] = bytecode[count+1]
+      function['length'] = bytecode[count+2]
+      function['addr'] = count
       count = count + bytecode[count+2] + 3
       continue
 
     if (bytecode[count] == 0xA1): # return
-      count = return_addr
-      logging.debug("RETURN " + str(return_addr))
-      logging.debug("BYTECODE " + str(bytecode[return_addr]))
+      count = function['return_addr']
+      logging.debug("RETURN " + str(function['return_addr']))
+      logging.debug("BYTECODE " + str(bytecode[function['return_addr']]))
       continue
 
     if (bytecode[count] == 0xAA): # call function
-      return_addr = count+2
+      function['return_addr'] = count+2
       logging.debug("CALL " + str(bytecode[1]))
-      logging.debug("function " + str(function_id))
-      logging.debug("function length " + str(function_length))
-      logging.debug("function addr " + str(function_addr))
-      logging.debug("return addr " + str(return_addr))
+      logging.debug("function " + str(function['id']))
+      logging.debug("function length " + str(function['length']))
+      logging.debug("function addr " + str(function['addr']))
+      logging.debug("return addr " + str(function['return_addr']))
       
-      count = function_addr+function_length -1
+      count = function['addr']+function['length'] -1
 
       logging.debug("count " + str(count) + " bytecode " + str(bytecode[count]))
       continue
