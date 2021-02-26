@@ -163,7 +163,7 @@ while (count < len(bytecode)):
       my_function = F[bytecode[count+1]]
       my_function['return_addr'] = count+2
       logging.debug("F " + str(my_function))
-      count = my_function['addr']+my_function['length'] - 2
+      count = my_function['addr']+ 3
 
       logging.debug("count " + str(count) + " bytecode " + str(bytecode[count]))
       continue
