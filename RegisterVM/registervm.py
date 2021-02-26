@@ -12,6 +12,9 @@ import logging
 #                  for instance 0x05 0x00 prints R1
 #           0x04 - if B1 nonzero then jump to next B2 commands (3 bytes)
 #           0x05 - Substrate B1 and B2 and place to B3 (4 bytes), bigendian
+#           0xA0 - Define a function B1 - function ID, B2 - function length
+#           0xA1 - Return from function
+#           0xAA - Call function with ID stored in B1 
 
 logger = logging.getLogger('my_logger')
 
@@ -43,14 +46,37 @@ bytecode = [0x00,  # idle
             0x00, # idle
             0x00, # idle
             0x00, # idle
-            0x03,  # print R2
+            0x00, # idle
+            0xA0, # function
+              0x00, # function id
+              0x04, # lenght of function in bytes
+                0x03, # print
+                0x09, # R0
+                0x00, # idle
+                0xA1, # return (end of function)
+            0x01, # load
+              0x00, # 0x0000
+              0x00, # 
+              0x00, # R0
+            0xAA, # call
+              0x00, # R1 (function id)
+            0x00, # idle
+            0x00, # idle
+            0x00, # idle
+            0x00, # idle
+            0x03,    # print R2
               0x02,  # R2
-            0x00]  # idle
+            0x00]    # idle
 
 logging.debug(bytecode)
 
 # command count
 count = 0
+
+function_id = 0
+function_length = 0
+function_addr = 0
+return_addr = 0
 
 # 256 Registers  R[0] ... R[255]
 nreg = 256
@@ -91,7 +117,7 @@ while (count < len(bytecode)):
       addr = bytecode[count+1]
       if (addr < nreg):
         print (R[addr])
-        logging.debug(R[addr])
+        logging.debug("R " + str(addr) + "=" + str(R[addr]))
       count += 2
       continue
 
@@ -109,6 +135,33 @@ while (count < len(bytecode)):
         logging.debug("Jump to next Rc "+str(R[bytecode[count+3]]))
         count += R[bytecode[count+3]]  # this code is not safe
       count += 4
+      continue
+    
+    if (bytecode[count] == 0xA0): # function
+      logging.debug("FUNCTION " + str(bytecode[count+1]) + " length " + str(bytecode[count+2]))
+      function_id = bytecode[count+1]
+      function_length = bytecode[count+2]
+      function_addr = count
+      count = count + bytecode[count+2] + 3
+      continue
+
+    if (bytecode[count] == 0xA1): # return
+      count = return_addr
+      logging.debug("RETURN " + str(return_addr))
+      logging.debug("BYTECODE " + str(bytecode[return_addr]))
+      continue
+
+    if (bytecode[count] == 0xAA): # call function
+      return_addr = count+2
+      logging.debug("CALL " + str(bytecode[1]))
+      logging.debug("function " + str(function_id))
+      logging.debug("function length " + str(function_length))
+      logging.debug("function addr " + str(function_addr))
+      logging.debug("return addr " + str(return_addr))
+      
+      count = function_addr+function_length -1
+
+      logging.debug("count " + str(count) + " bytecode " + str(bytecode[count]))
       continue
 
 logging.debug("bytecode is completed")
