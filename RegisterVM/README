@@ -12,5 +12,5 @@
 #           0x05 - Substrate B1 and B2 and place to B3 (4 bytes), bigendian
 #           0x06 - if B1 > B2 jump to B3
 #           0xA0 - Define a function B1 - function ID, B2 - function length
-#           0xA1 - Return from function
+#           0xA1 - Return from function ID stored in B1
 #           0xAA - Call function with ID stored in B1 
