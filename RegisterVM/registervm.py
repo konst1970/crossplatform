@@ -39,10 +39,10 @@ bytecode = [0x00,  # idle
               0x00, # 0x0001
               0x01,
               0x03, # R3
-            0x06, # Jump if nonzero
-              0x00, # if R0 nonzero then jump to next R1 commands 
-              0x01, # R1 where to jump
-              0x03,
+            0x06, # Jump Ra > Rb
+              0x00, # if R0 > R1  
+              0x01, 
+              0x03, # R1 where to jump
             0x00, # idle
             0x00, # idle
             0x00, # idle
